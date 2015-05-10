@@ -35,7 +35,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 struct owner{
 	char name[NAME_SIZE + 1];
-	int uid;
+	uid_t uid;
 	struct owner *next;
 };
 static struct owner *hash_table[HASHSIZE];
@@ -45,7 +45,7 @@ static inline int hash_fun(int n)
 	return n&(HASHSIZE-1);
 }
 
-static struct owner* find_by_uid(int n)
+static struct owner* find_by_uid(uid_t n)
 {
 	struct owner* p;
 
@@ -57,7 +57,7 @@ static struct owner* find_by_uid(int n)
 	return p;
 }
 
-static struct owner* new_owner(int n)
+static struct owner* new_owner(uid_t n)
 {
 	struct owner* p;
 	struct passwd *u;
@@ -75,7 +75,7 @@ static struct owner* new_owner(int n)
 	return p;
 }
 
-char *get_owner_name(int u)
+char *get_owner_name(uid_t u)
 {
 	struct owner *p;
 	p = find_by_uid(u);

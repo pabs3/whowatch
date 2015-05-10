@@ -39,7 +39,7 @@ struct user_t
 	struct list_head head;
 	char 	name[UT_NAMESIZE + 1];
 	char 	tty[UT_LINESIZE + 1];
-	int 	pid;
+	pid_t 	pid;
 	char 	parent[16];
 	char 	host[UT_HOSTSIZE + 1];
 	int 	line;
@@ -51,7 +51,7 @@ static int toggle;	/* if 0 show cmd line else show idle time 	*/
 //			" [c]md [d]etails [s]ysinfo";
 
 #ifdef HAVE_PROCESS_SYSCTL
-int get_login_pid(char *);
+pid_t get_login_pid(char *);
 #endif
 
 struct prot_t

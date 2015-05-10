@@ -277,7 +277,7 @@ static void ptree_redraw(struct wdgt *w)
 	draw_tree(w);
 }
 
-void do_signal(struct wdgt *w, int sig, int pid)
+void do_signal(struct wdgt *w, int sig, pid_t pid)
 {
 	send_signal(sig, pid);
 	ptree_periodic(w);
@@ -302,7 +302,7 @@ static int signal_keys(struct wdgt *w, int key)
 
 static void *pmsgh(struct wdgt *w, int type, struct wdgt *s, void *d)
 {
-	static u32 pid;
+	static pid_t pid;
 	switch(type) {
 		case MWANT_CRSR_VAL:
 			pid = crsr_pid(w->crsr);

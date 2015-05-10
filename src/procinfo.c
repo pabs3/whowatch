@@ -43,10 +43,10 @@ extern int can_use_kvm;
 
 struct procinfo
 {
-	int ppid;			/* parent pid		*/
+	pid_t ppid;			/* parent pid		*/
 	int tpgid;			/* tty process group id */
 	int cterm;			/* controlling terminal	*/
-	int euid;			/* effective uid	*/
+	uid_t euid;			/* effective uid	*/
 	char stat;			/* process status	*/
 	char exec_file[EXEC_FILE+1];	/* executable name	*/
 };
@@ -55,7 +55,7 @@ struct procinfo
  * Get process info
  */
 #ifndef HAVE_PROCESS_SYSCTL
-void get_info(int pid, struct procinfo *p)
+void get_info(pid_t pid, struct procinfo *p)
 {
 	char buf[32];
 	FILE *f;
@@ -82,7 +82,7 @@ void get_info(int pid, struct procinfo *p)
 	p->exec_file[EXEC_FILE] = '\0';
 }
 #else
-int fill_kinfo(struct kinfo_proc *info, int pid)
+int fill_kinfo(struct kinfo_proc *info, pid_t pid)
 {
 	int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid };
 	size_t len = sizeof *info;
@@ -91,7 +91,7 @@ int fill_kinfo(struct kinfo_proc *info, int pid)
 	return len?0:-1;
 }
 
-void get_info(int pid, struct procinfo *p)
+void get_info(pid_t pid, struct procinfo *p)
 {
 	struct kinfo_proc info;
 	p->ppid = -1;
@@ -116,7 +116,7 @@ void get_info(int pid, struct procinfo *p)
 /*
  * Get parent pid
  */
-int get_ppid(int pid)
+pid_t get_ppid(pid_t pid)
 {
 	static struct procinfo p;
 	get_info(pid, &p);
@@ -145,10 +145,11 @@ int get_term(char *tty)
  * Find pid of the process which parent doesn't have control terminal.
  * Hopefully it is a pid of the login shell (ut_pid in Linux)
  */
-int get_login_pid(char *tty)
+pid_t get_login_pid(char *tty)
 {
 	int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_TTY, 0};
-	int t, el, i, pid, cndt = -1, l;
+	int t, el, i, cndt = -1, l;
+	pid_t pid;
 	size_t len;
 	struct kinfo_proc *info;
 	struct procinfo p;
@@ -212,7 +213,7 @@ int get_all_info(struct kinfo_proc **info)
  * Return the complete command line for the process
  */
 #ifndef HAVE_PROCESS_SYSCTL
-char *get_cmdline(int pid)
+char *get_cmdline(pid_t pid)
 {
 	static char buf[512];
 	int fd, i, n;
@@ -252,7 +253,7 @@ int kvm_init()
 #endif
 
 #ifdef HAVE_PROCESS_SYSCTL
-char *get_cmdline(int pid)
+char *get_cmdline(pid_t pid)
 {
 	static char buf[512];
 	struct kinfo_proc info;
@@ -285,7 +286,7 @@ char *get_cmdline(int pid)
  * Get process group ID of the process which currently owns the tty
  * that the process is connected to and return its command line.
  */
-char *get_w(int pid)
+char *get_w(pid_t pid)
 {
 	struct procinfo p;
 	get_info(pid, &p);
@@ -295,14 +296,14 @@ char *get_w(int pid)
 /*
  * Get name of the executable
  */
-char *get_name(int pid)
+char *get_name(pid_t pid)
 {
 	static struct procinfo p;
 	get_info(pid, &p);
 	return p.exec_file;
 }
 
-int proc_pid_uid(u32 pid)
+uid_t proc_pid_uid(pid_t pid)
 {
 	char buf[32];
 	struct stat s;

@@ -82,7 +82,7 @@ AC_MSG_CHECKING([whether utmp struct has ut_pid member])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <utmp.h>
-]], [[struct utmp u;int i=u.ut_pid;]])],[AC_MSG_RESULT(yes)
+]], [[struct utmp u;pid_t i=u.ut_pid;]])],[AC_MSG_RESULT(yes)
 	AC_DEFINE([HAVE_UTPID],[1],[define if utmp struct has ut_pid member])],[AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING([whether utmp struct has ut_name member])

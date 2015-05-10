@@ -77,7 +77,7 @@ static inline char *_read_link(const char *path)
 	return buf;
 }
 
-static void read_link(int pid, char *name)
+static void read_link(pid_t pid, char *name)
 {
 	char *v;
 	char pbuf[32];
@@ -289,7 +289,7 @@ static void del_conn(void)
  * to update stored TCP connections. Don't do it too often, because
  * it can generate load (/proc/net/tcp can be quite large).
  */
-void open_fds(int pid, char *name)
+void open_fds(pid_t pid, char *name)
 {
 	DIR *d;
 	char *s;
@@ -380,7 +380,7 @@ END:
 	fclose(f);
 }
 
-static void read_meminfo(int pid, char *name)
+static void read_meminfo(pid_t pid, char *name)
 {
 	char buf[32];
 	snprintf(buf, sizeof buf, "/proc/%d/status", pid);
@@ -393,7 +393,7 @@ static void read_meminfo(int pid, char *name)
  * Returns time the process
  * started in seconds after system boot.
  */
-static unsigned long p_start_time(int pid)
+static unsigned long p_start_time(pid_t pid)
 {
 	char buf[32];
 	FILE *f;
@@ -434,7 +434,7 @@ FOUND:
 }
 
 
-static void proc_starttime(int pid, char *name)
+static void proc_starttime(pid_t pid, char *name)
 {
 	unsigned long i, sec;
 	char *s;
@@ -452,7 +452,7 @@ static void proc_starttime(int pid, char *name)
 
 struct proc_detail_t {
 	char *title;		/* title of a particular information	*/
-	void (* fn)(int pid, char *name);
+	void (* fn)(pid_t pid, char *name);
 	int t_lines;		/* nr of line for a title		*/
 	char *name;		/* used only to read links		*/
 };
@@ -470,7 +470,7 @@ struct proc_detail_t proc_details_t[] = {
 void eproc(void *p)
 {
 	int i;
-	int pid = !p?1:*(u32*)p;
+	pid_t pid = !p?1:*(u32*)p;
 	struct proc_detail_t *t;
 	int size;
 	plgn_out_start();

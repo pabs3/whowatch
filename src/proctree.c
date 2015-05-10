@@ -63,8 +63,8 @@ int get_all_info(struct kinfo_proc **);
 
 struct pinfo {
 	char state;
-	int pid;
-	int ppid;
+	pid_t pid;
+	pid_t ppid;
 };
 
 #ifndef HAVE_PROCESS_SYSCTL
@@ -150,7 +150,7 @@ static inline struct proc_t* new_proc(int n, char state)
 	return p;
 }
 
-static struct proc_t *validate_proc(int pid, char state)
+static struct proc_t *validate_proc(pid_t pid, char state)
 {
 	struct proc_t* p;
 
@@ -234,7 +234,7 @@ int update_tree(void del(void*))
 
 static struct proc_t *proc, *root;
 
-struct proc_t* tree_start(int root_pid, int start_pid)
+struct proc_t* tree_start(pid_t root_pid, pid_t start_pid)
 {
 	root = find_by_pid(root_pid);
 	if (!root) return 0;
@@ -263,7 +263,7 @@ struct proc_t* tree_next()
 
 static char buf[TREE_STRING_SZ];
 
-char* tree_string(int root, struct proc_t *p)
+char* tree_string(pid_t root, struct proc_t *p)
 {
 	struct proc_t *q;
 	char *s;

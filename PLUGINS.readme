@@ -138,13 +138,13 @@ into the whowatch. If it doesn't exists plugin won't be loaded.
 As you can see the argument is a void pointer.
 The way it should be treated depends on type of plugin.
 If you write proc plugin (plugin that prints information about selected
-process) then inside plugin_init() argument must be casted to (int *).
+process) then inside plugin_init() argument must be casted to (pid_t *).
 This is the way you know pid of a selected process.
 Take a look:
 
 int plugin_init(void *p)
 {
-	int pid = (int *) p;
+	pid_t pid = *(pid_t *) p;
 	println("Initializing proc plugin.");
 	println("Current selected process has pid: %d", pid);
 	return PERIODIC | OVERWRITE;
@@ -185,7 +185,7 @@ In fact in plugin_init() you rather don't need to bother about argument,
 since plugin_init is called only once (loading plugin into the whowatch).
 But you can use it if you need for example to initialize your own data
 structures (malloc memory, init a hash table, whatever...).
-Argument (which is a pointer to int - pid of a selected process, or
+Argument (which is a pointer to pid_t - pid of a selected process, or
 pointer to char - selected user's name) is really important in
 plugin_draw() function.
 

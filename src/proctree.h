@@ -30,7 +30,7 @@ struct plist {
 };
 
 struct proc_t {
-	int pid;
+	pid_t pid;
 	char   state;
 	struct proc_t *parent;
 	struct proc_t *child;
@@ -42,10 +42,10 @@ struct proc_t {
 
 int update_tree(void del(void*));
 int update_tree();
-struct proc_t* find_by_pid(int pid);
-struct proc_t* tree_start(int root, int start);
+struct proc_t* find_by_pid(pid_t pid);
+struct proc_t* tree_start(pid_t root, pid_t start);
 struct proc_t* tree_next();
-char *tree_string(int root, struct proc_t *proc);
+char *tree_string(pid_t root, struct proc_t *proc);
 
 extern int num_proc;
 

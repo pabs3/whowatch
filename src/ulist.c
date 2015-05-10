@@ -72,7 +72,7 @@ void update_line(int line)
 struct user_t *alloc_user(struct utmp *entry)
 {
 	struct user_t *u;
-	int ppid;
+	pid_t ppid;
 
 	u = calloc(1, sizeof *u);
 	if(!u) errx(1, "Cannot allocate memory.");

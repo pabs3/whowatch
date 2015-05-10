@@ -130,7 +130,7 @@ struct process
 	struct process *next;
 	struct list_head plist_l;
 	int 	line;
-	int 	uid;
+	uid_t 	uid;
 	struct 	proc_t *proc;
 };
 
@@ -192,20 +192,20 @@ void delete_tree_line(void *line);
 
 /* procinfo.c */
 #ifdef HAVE_PROCESS_SYSCTL
-int get_login_pid(char *tty);
+pid_t get_login_pid(char *tty);
 #endif
-char *get_cmdline(int);
-int get_ppid(int);
-char *get_name(int);
-char *get_w(int pid);
+char *get_cmdline(pid_t);
+int get_ppid(pid_t);
+char *get_name(pid_t);
+char *get_w(pid_t pid);
 char *count_idle(char *tty);
-int proc_pid_uid(u32);
+uid_t proc_pid_uid(pid_t);
 #ifndef HAVE_GETLOADAVG
 int proc_getloadavg(double [], int);
 #endif
 
 /* owner.c */
-char *get_owner_name(int u);
+char *get_owner_name(uid_t u);
 
 /* block.c */
 void *get_empty(int, struct list_head *);
