@@ -13,6 +13,7 @@
 - KBD_ESC: add it to wdts
 - input box resize - decor box problem and cursor moving outside
 - don't refresh anything in key_action() if any key (without handler) was pressed.
+- make sure the /proc parsing code is secure against attackers
 
 FUNCTIONALITY:
 - freeze process tree and mark multiple processes to kill
@@ -26,3 +27,4 @@ FreeBSD port:
 - inodes
 - modules
 - file descriptors
+
