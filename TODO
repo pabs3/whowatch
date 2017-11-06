@@ -26,3 +26,5 @@ FreeBSD port:
 - inodes
 - modules
 - file descriptors
+
+Use a terminal widget library: stfl cwidget cdk
