@@ -26,3 +26,44 @@ FreeBSD port:
 - inodes
 - modules
 - file descriptors
+
+code warnings:
+plist.c: In function 'pmsgh':
+plist.c:289:46: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+    return (int *)(intptr_t)(getprocbyname(w, (int)d));
+                                              ^
+proctree.c: In function 'update_tree':
+proctree.c:63:32: warning: '%s' directive writing up to 255 bytes into a region of size 26 [-Wformat-overflow=]
+   sprintf(name+sizeof PROCDIR,"%s/stat",e->d_name);
+                                ^~
+In file included from /usr/include/stdio.h:862:0,
+                 from proctree.c:7:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:33:10: note: '__builtin___sprintf_chk' output between 6 and 261 bytes into a destination of size 26
+   return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       __bos (__s), __fmt, __va_arg_pack ());
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+wdgts.c: In function 'do_search':
+wdgts.c:28:34: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+  ret = wmsg_send(w, MSND_SEARCH, (void *)type);
+                                  ^
+
+ulist.c: In function 'umsgh':
+ulist.c:290:45: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+     return (void *)(intptr_t)user_search(w, (u32)d);
+                                             ^
+
+proc_plugin.c: In function 'open_fds':
+proc_plugin.c:291:42: warning: '%s' directive output may be truncated writing up to 255 bytes into a region of size between 11 and 21 [-Wformat-truncation=]
+   snprintf(buf, sizeof buf, "/proc/%d/fd/%s", pid, dn->d_name);
+                                          ^~
+In file included from /usr/include/stdio.h:862:0,
+                 from whowatch.h:1,
+                 from proc_plugin.c:11:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:64:10: note: '__builtin___snprintf_chk' output between 12 and 277 bytes into a destination of size 32
+   return __builtin___snprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        __bos (__s), __fmt, __va_arg_pack ());
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
