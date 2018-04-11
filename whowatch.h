@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <utmp.h>
+#include <utmpx.h>
 #include <string.h>
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/ioctl.h>
-#include <ncurses.h>
+#include <ncurses/ncurses.h>
 #include <assert.h>
 
 #define CURSOR_COLOR	A_REVERSE
@@ -75,12 +75,12 @@ struct user_t
 {
 	struct user_t *next;
 	struct user_t *prev;
-        char name[UT_NAMESIZE + 1];	/* login name 		*/
-        char tty[UT_LINESIZE + 1];	/* tty			*/
+        char name[__UT_NAMESIZE + 1];	/* login name 		*/
+        char tty[__UT_LINESIZE + 1];	/* tty			*/
         int prot;			
         int pid;			/* pid of login shell 	*/
 	char parent[16];
-        char host[UT_HOSTSIZE + 1];
+        char host[__UT_HOSTSIZE + 1];
         int line;
 };
 

@@ -4,12 +4,12 @@
 #include "whowatch.h"
 #include "config.h"
 
-#ifndef UTMP_FILE
-#define UTMP_FILE 	"/var/run/utmp"
+#ifndef UTMPX_FILE
+#define UTMPX_FILE 	"/var/run/utmpx"
 #endif
 
-#ifndef WTMP_FILE
-#define WTMP_FILE 	"/var/log/wtmp"
+#ifndef WTMPX_FILE
+#define WTMPX_FILE 	"/var/log/wtmpx"
 #endif
 
 #define TIMEOUT 	3
@@ -17,7 +17,7 @@
 #define LOGOUT		1		
 
 #ifdef HAVE_UT_NAME
-#define ut_user ut_name
+// #define ut_user ut_name
 #endif
 
 enum key {  ENTER=0x100, UP, DOWN, LEFT, RIGHT, DELETE, ESC, CTRL_K, CTRL_I,
@@ -43,7 +43,7 @@ int signal_sent;
 
 int how_many, telnet_users, ssh_users, local_users;
 
-int wtmp_fd;		/* wtmp file wd 			*/
+int wtmpx_fd;		/* wtmpx file wd 			*/
 int screen_rows;	/* screen rows returned by ioctl		*/
 int screen_cols;	/* screen cols returned by ioctl		*/
 
@@ -119,15 +119,15 @@ void update_line_nr(int line)
 /* 
  * Create new user structure and fill it
  */
-struct user_t *allocate_user(struct utmp *entry)
+struct user_t *allocate_user(struct utmpx *entry)
 {
 	struct user_t *u;
 	int ppid;
 	u = calloc(1, sizeof *u);
 	if(!u) errx(1, "Cannot allocate memory.");
-	strncpy(u->name, entry->ut_user, UT_NAMESIZE);
-	strncpy(u->tty, entry->ut_line, UT_LINESIZE);
-	strncpy(u->host, entry->ut_host, UT_HOSTSIZE);
+	strncpy(u->name, entry->ut_user, __UT_NAMESIZE);
+	strncpy(u->tty, entry->ut_line, __UT_LINESIZE);
+	strncpy(u->host, entry->ut_host, __UT_HOSTSIZE);
 	
 #ifdef HAVE_UTPID		
 	u->pid = entry->ut_pid;
@@ -164,7 +164,7 @@ void cleanup()
 	dellist(u, users);
 	/* clear list of processes */
 	clear_list();			
-	close(wtmp_fd);
+	close(wtmpx_fd);
 }
 
 void windows_init()
@@ -190,18 +190,18 @@ void users_list_refresh()
  * Gather informations about users currently on the machine
  * Needed only at start or restart
  */
-void read_utmp()		
+void read_utmpx()		
 {
 	int fd, i;
-	static struct utmp entry;
+	static struct utmpx entry;
 	struct user_t *u;
 	
-	if ((fd = open(UTMP_FILE ,O_RDONLY)) == -1){
+	if ((fd = open(UTMPX_FILE ,O_RDONLY)) == -1){
 		curses_end();
-		errx(1, "Cannot open " UTMP_FILE);
+		errx(1, "Cannot open " UTMPX_FILE);
 	}
 	while((i = read(fd, &entry,sizeof entry)) > 0) {
-		if(i != sizeof entry) errx(1, "Error reading " UTMP_FILE );
+		if(i != sizeof entry) errx(1, "Error reading " UTMPX_FILE );
 #ifdef HAVE_USER_PROCESS
 		if(entry.ut_type != USER_PROCESS) continue;
 #else
@@ -219,7 +219,7 @@ void read_utmp()
 	return;
 }
 
-struct user_t* new_user(struct utmp *newone)
+struct user_t* new_user(struct utmpx *newone)
 {
 	struct user_t *u;
 	u = allocate_user(newone);
@@ -241,19 +241,19 @@ struct user_t *cursor_user(int line)
 }
 
 /*
- * Check wtmp for logouts or new logins
+ * Check wtmpx for logouts or new logins
  */
-void check_wtmp()
+void check_wtmpx()
 {
 	struct user_t *u;
-	struct utmp entry;
+	struct utmpx entry;
 	int i;
 
-	while((i = read(wtmp_fd, &entry, sizeof entry)) > 0){ 
+	while((i = read(wtmpx_fd, &entry, sizeof entry)) > 0){ 
 		if (i < sizeof entry){
 			curses_end();
 			cleanup();
-			errx(1, "Error reading " WTMP_FILE );
+			errx(1, "Error reading " WTMPX_FILE );
 		}
 		/* user just logged in */
 #ifdef HAVE_USER_PROCESS
@@ -274,7 +274,7 @@ void check_wtmp()
 #endif
 	/* user just logged out */
 		for_each(u, users) {
-			if(strncmp(u->tty, entry.ut_line, UT_LINESIZE)) 
+			if(strncmp(u->tty, entry.ut_line, __UT_LINESIZE)) 
 				continue;
 			if (state == USERS_LIST) 
 				delete_line(&users_list, u->line);
@@ -311,8 +311,8 @@ char *users_list_giveline(int line)
 void update_load();
 void periodic()
 {
-	/* always check wtmp for logins and logouts */
-	check_wtmp();
+	/* always check wtmpx for logins and logouts */
+	check_wtmpx();
 	update_load();		
 	switch(state){
 		case INIT_TREE:
@@ -387,10 +387,10 @@ void send_signal(int sig, pid_t pid)
 
 void main_init()
 {
-	if((wtmp_fd = open(WTMP_FILE ,O_RDONLY)) == -1) 
-		errx(1, "Cannot open " WTMP_FILE);
-	if(lseek(wtmp_fd, 0, SEEK_END) == -1) 
-		errx(1, "Cannot seek in " WTMP_FILE);
+	if((wtmpx_fd = open(WTMPX_FILE ,O_RDONLY)) == -1) 
+		errx(1, "Cannot open " WTMPX_FILE);
+	if(lseek(wtmpx_fd, 0, SEEK_END) == -1) 
+		errx(1, "Cannot seek in " WTMPX_FILE);
 }
 
 void restart()
@@ -404,7 +404,7 @@ void restart()
 	state = USERS_LIST;
 	werase(users_list.wd);
 	wrefresh(users_list.wd);
-	read_utmp();
+	read_utmpx();
 	main_init();
 	
 	print_help(state);
@@ -634,7 +634,7 @@ int main()
 //	signal(SIGSEGV, segv_handler);
 
 	wrefresh(users_list.wd);
-	read_utmp();
+	read_utmpx();
 	print_help(state);
 	print_info();
 	update_load();
