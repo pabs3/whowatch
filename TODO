@@ -18,6 +18,7 @@ FUNCTIONALITY:
 - freeze process tree and mark multiple processes to kill
 - display nr of processes, zombies, working etc.
 - make search box small, maybe at the last line
+- make utmp support optional for containers/chroot
 
 FreeBSD port:
 - command-lines: kvm needs root, fall back on /proc or libprocstat
